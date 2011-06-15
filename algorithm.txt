@@ -1,0 +1,56 @@
+if there IS NOT a .magicTranslator/credentials file
+    Ask the user for his credentials
+    create the file
+
+loop through all the .po files in the directory tree
+    if the .po file doesn't have corresponding .po.mt file, ask the user for what language
+    this file should be translated to, and create a .po.mt file for this file, that has stored
+    the language mapping.
+
+    if the .po file DOES have a language mapping file, iterate through all the strings in the
+    file. For each string that lacks a translation, create a TranslationObject and set it's id, source_text, note and target_language.
+    Push the TranslationObject to a Dictionary
+
+Loop through the TranslationObject Dictionary
+    KEY = "mt_" + Create a SHA512 hash of id + source_text + note + secret
+    if TranslationObject is MARKED_AS_CHECKED or STALE
+        skip it
+    Check openkeyval.org if KEY exists
+    if not
+        mark it as UNSCHEDULED
+    if there is
+        get the value, decrypt it with secret, as project_id
+        if that project_id is MARKED_AS_CHECKED, do nothing else
+        check the status of that project_id
+            if the project has been completed, and is a translate project
+                send it in as a proofread project
+            if the project has been completed, and it is a proofread project
+                grab the strings translated in the project, and put them into they respective
+                places in the dictionary. Mark the translationobject as STALE
+            Find all TranslationObjects with that project_id and set them as MARKED_AS_CHECKED
+
+Loop through the Dictionary again, find all STALE
+    Save them back to PO files
+
+Construct XML from a all the UNSCHEDULED translationObjects.
+    Submit a project
+    set openkeyval.org KEY to (encrypt the project_id with secret)
+
+Services
+    KeyValueService (openkeyval.org)
+    HashingService (SHA512)
+    FileSystemService
+    IFileFormatService
+        GetTextService
+    ITranslationService
+        OneHourTranslationService
+    ICredentials
+        OneHourTranslationCredentials
+
+
+
+
+
+
+
+
