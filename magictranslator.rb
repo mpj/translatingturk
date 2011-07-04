@@ -19,8 +19,6 @@ class String
     self[(self.index('"')+1)..-3]
   end
 
-
-
 end
 
 class Translatable
